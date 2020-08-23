@@ -26,14 +26,17 @@ else
     GIT_SSH_COMMAND="$GIT_SSH_COMMAND -o StrictHostKeyChecking=no"
 fi
 
-if [ -n "$APP_CONFIG" ]; then
-    echo "Creating the app if not exists"
-    $GIT_SSH_COMMAND dokku@$HOST apps:create $PROJECT
+EXISTS_MSG=$($GIT_SSH_COMMAND dokku@$HOST apps:exists $PROJECT)
 
+if [[ $EXISTS_MSG != *already* ]]; then
+    echo "Creating the app"
+    $GIT_SSH_COMMAND dokku@$HOST apps:create $PROJECT
+fi
+
+if [ -n "$APP_CONFIG" ]; then
     echo "Setting app config"
     $GIT_SSH_COMMAND dokku@$HOST config:set --no-restart $PROJECT $APP_CONFIG
 fi
 
 echo "The deploy is starting"
-
 GIT_SSH_COMMAND="$GIT_SSH_COMMAND" $GIT_COMMAND
