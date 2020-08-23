@@ -27,6 +27,9 @@ else
 fi
 
 if [ -n "$APP_CONFIG" ]; then
+    echo "Creating the app if not exists"
+    $GIT_SSH_COMMAND dokku@$HOST apps:create $PROJECT
+
     echo "Setting app config"
     $GIT_SSH_COMMAND dokku@$HOST config:set --no-restart $PROJECT $APP_CONFIG
 fi
